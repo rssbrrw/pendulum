@@ -68,6 +68,12 @@ def test_precise_diff():
         diff, months=11, days=30, hours=23, minutes=59, seconds=59, microseconds=999800
     )
 
+    dt1 = datetime(2020, 9, 2)
+    dt2 = datetime(2021, 9, 1)
+
+    diff = precise_diff(dt1, dt2)
+    assert_diff(diff, months=11, days=30)
+
     # DST
     tz = timezone("America/Toronto")
     dt1 = tz.datetime(2017, 3, 7)

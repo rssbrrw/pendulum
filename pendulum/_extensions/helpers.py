@@ -310,13 +310,17 @@ def precise_diff(
         days_in_last_month = DAYS_PER_MONTHS[leap][month]
         days_in_month = DAYS_PER_MONTHS[int(is_leap(d2.year))][d2.month]
 
-        if d_diff < days_in_month - days_in_last_month:
+        # If our diff spans multiple months then we need to account for a
+        # potential difference in number of days in this month and last
+        d_offset = days_in_month - days_in_last_month if m_diff else 0
+
+        if d_diff < d_offset:
             # We don't have a full month, we calculate days
             if days_in_last_month < d1.day:
                 d_diff += d1.day
             else:
                 d_diff += days_in_last_month
-        elif d_diff == days_in_month - days_in_last_month:
+        elif d_diff == d_offset:
             # We have exactly a full month
             # We remove the days difference
             # and add one to the months difference

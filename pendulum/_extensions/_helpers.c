@@ -566,6 +566,7 @@ PyObject *precise_diff(PyObject *self, PyObject *args)
     int year;
     int month;
     int leap;
+    int day_offset = 0;
     int days_in_last_month;
     int days_in_month;
     int dt1_year = PyDateTime_GET_YEAR(dt1);
@@ -811,7 +812,14 @@ PyObject *precise_diff(PyObject *self, PyObject *args)
         days_in_last_month = DAYS_PER_MONTHS[leap][month];
         days_in_month = DAYS_PER_MONTHS[_is_leap(dt2_year)][dt2_month];
 
-        if (day_diff < days_in_month - days_in_last_month)
+        if (month_diff != 0)
+        {
+            // If our diff spans multiple months then we need to account for a
+            // potential difference in number of days in this month and last
+            day_offset = days_in_month - days_in_last_month;
+        }
+
+        if (day_diff < day_offset)
         {
             // We don't have a full month, we calculate days
             if (days_in_last_month < dt1_day)
@@ -823,7 +831,7 @@ PyObject *precise_diff(PyObject *self, PyObject *args)
                 day_diff += days_in_last_month;
             }
         }
-        else if (day_diff == days_in_month - days_in_last_month)
+        else if (day_diff == day_offset)
         {
             // We have exactly a full month
             // We remove the days difference
